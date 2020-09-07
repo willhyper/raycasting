@@ -2,8 +2,7 @@
 {:source-paths
  ["src"]
 
- :dependencies [[binaryage/devtools "0.9.7"]
-                [reagent "0.8.0-alpha2"]]
+ :dependencies [[binaryage/devtools "0.9.7"]]
 
  ;; set an nrepl port for connection to a REPL.
  :nrepl        {:port 8777}
@@ -12,18 +11,13 @@
  {:app {:target :browser
         :output-dir "public/js/compiled"
         :asset-path "/js/compiled"
-
+        :compiler-options {:optimizations :advanced}
         :modules
         {:main
          {:entries [raycasting.core]}}
 
         :devtools
-        ;; before live-reloading any code call this function
-        {:before-load raycasting.core/stop
-         ;; after live-reloading finishes call this function
-         :after-load raycasting.core/start
-         ;; serve the public directory over http at port 8700
+        {;; serve the public directory over http at port 8700
          :http-root    "public"
          :http-port    8700
-         :preloads     [devtools.preload]}
-        }}}
+         :preloads     [devtools.preload]}}}}
