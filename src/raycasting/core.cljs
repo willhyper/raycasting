@@ -1,13 +1,6 @@
-(ns raycasting.core)
+(ns raycasting.core
+  (:require [raycasting.camera :as cam]))
 
-;; define your app data so that it doesn't get over-written on reload
-
-(defonce app-state (atom {:text "Hello world!"}))
-
-(defn hello-world []
-  [:div
-   [:h1 (:text @app-state)]
-   [:h3 "Edit this and watch it change!"]])
 
 (defn start [])
 
