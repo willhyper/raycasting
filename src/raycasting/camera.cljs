@@ -3,6 +3,15 @@
 
 (def camera (atom {:x 0.0 :y 0.0 :degree 0.0}))
 
+(defn move-forward
+  "Move `camera` forward given `amount` respecting the `degree`."
+  ([camera] (move-forward camera 1))
+  ([camera amount]
+   (let [rad (* (:degree camera) (/ Math/PI 180.0))]
+     (merge-with + camera {:x (three-decimal (* (Math/sin rad) amount))
+                           :y (three-decimal (* (Math/cos rad) amount))}))))
+
+
 #_(comment
     (in-ns 'raycasting.camera)
     (:degree @camera)
