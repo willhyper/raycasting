@@ -21,6 +21,13 @@
      (+ y (three-decimal (* amount (Math/cos angle))))]))
 
 
+(defn rotate
+  ([camera] (rotate camera 0.5))
+  ([camera degree] 
+   (let [deg (mod (+ degree (:degree camera)) 360.0)]
+     (assoc camera :degree deg)))
+  )
+
 #_(comment
     (in-ns 'raycasting.camera)
     (:degree @camera)
@@ -34,4 +41,6 @@
 
     (swap! camera move-forward)
     
+    (rotate @camera)
+    (swap! camera rotate)
     )
