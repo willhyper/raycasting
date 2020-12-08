@@ -23,7 +23,7 @@
 (defn rotate
   ([camera] (rotate camera 0.5))
   ([camera degree] 
-   (let [deg (mod (+ degree (:degree camera)) 360.0)]
+   (let [deg (-> (:degree camera) (+ degree) (mod 360.0))]
      (assoc camera :degree deg)))
   )
 
@@ -42,4 +42,5 @@
     
     (rotate @camera)
     (swap! camera rotate)
+    
     )
