@@ -28,7 +28,6 @@
   )
 
 #_(comment
-    (in-ns 'raycasting.camera)
     (:degree @camera)
 
     (swap! camera (fn [c] (assoc c :degree 40)))
