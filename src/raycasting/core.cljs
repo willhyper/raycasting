@@ -1,5 +1,6 @@
 (ns raycasting.core
-  (:require [raycasting.camera :as cam]))
+  (:require [raycasting.camera :as cam])
+  (:require [raycasting.stage :as stage]))
 
 
 (defonce ^:dynamic *canvas* nil)
@@ -42,6 +43,9 @@
     (draw-line pos pointer color)
     (set! (. *ctx* -fillStyle) color)
     (. *ctx* fillRect (- x (/ width 2)) (- y (/ width 2)) width width)))
+
+(defn draw-walls []
+  (doseq [wall stage/walls] (apply draw-line wall)))
 
 #_(comment
     (draw-line [0 10] [200 40])
