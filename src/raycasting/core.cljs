@@ -55,23 +55,5 @@
     
     (draw-walls)
 
-    (let [[x1 y1 x2 y2] [1 2 300 400]]
-      (doto *ctx*
-        (.beginPath)
-        (.moveTo x1 y1)
-        (.lineTo x2 y2)
-        (.stroke)
-
-        (.beginPath)
-        (.arc x2 y2 20 0 (* 2 Math/PI))
-        (.stroke)))
-
-    (doto *ctx*
-      (.getTransform))
-
-    (def tx (. *ctx* getTransform))
-    (. tx -b)
-    (def txm [(. tx -a) (. tx -b) (. tx -c) (. tx -d) (. tx -e) (. tx -f)])
-    txm
     )
 
