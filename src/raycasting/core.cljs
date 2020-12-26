@@ -53,5 +53,7 @@
     @cam/camera    
     (draw-camera @cam/camera)
 
+    (draw-walls)
+
     )
 
