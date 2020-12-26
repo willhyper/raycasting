@@ -27,6 +27,12 @@
      (assoc camera :degree deg)))
   )
 
+(defn set-position
+  ([cam] (set-position cam 0 0 0))
+  ([cam x y] (set-position cam x y 0))
+  ([cam x y deg] (assoc cam :x x :y y :degree deg))
+)
+
 #_(comment
     (:degree @camera)
 

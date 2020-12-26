@@ -55,5 +55,6 @@
     
     (draw-walls)
 
+    (swap! cam/camera #(cam/set-position % 100 120 180))
     )
 
