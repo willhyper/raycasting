@@ -56,6 +56,10 @@
 
 (defn v- [[px py] [qx qy]]
   [(- qx px) (- qy py)])
+(defn v+ [[px py] [qx qy]]
+  [(+ qx px) (+ qy py)])
+(defn v* [[px py] s]
+  [(* s px) (* s py)])
 
 (defn outer-product
   ([[px py] [qx qy]] (- (* px qy) (* py qx)))
@@ -81,6 +85,16 @@
   (convex-quadrilateral? A C B D))
 
 (intersect? [A B] [C D])
+
+(defn intersection
+  {:test #(do (assert (= [0.5 0.5] (intersection [[0 0] [1 1]] [[0 1] [1 0]]))))}
+  [[A B] [C D]]
+  (let [n (outer-product (v- C D) (v- A C))
+        d (outer-product (v- C D) (v- A B))
+        t (/ n d)]
+    (v+ (v* B t) (v* A (- 1 t)))))
+
+
 
 #_(comment
     (draw-line [0 10] [200 40])
