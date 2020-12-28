@@ -47,12 +47,47 @@
 (defn draw-walls []
   (doseq [wall stage/walls] (apply draw-line wall)))
 
+
+(def O [0 0])
+(def A [1 0])
+(def B [-1 0])
+(def C [0 1])
+(def D [0 -1])
+
+(defn v- [[px py] [qx qy]]
+  [(- qx px) (- qy py)])
+
+(defn outer-product
+  ([[px py] [qx qy]] (- (* px qy) (* py qx)))
+  ([O A B] (outer-product (v- O A) (v- O B))))
+
+(defn ccw? [O A B] (pos? (outer-product O A B)))
+(defn cw?  [O A B] (neg? (outer-product O A B)))
+(defn colinear? [O A B] (= 0 (outer-product O A B)))
+
+
+(defn convex-quadrilateral? [P Q R S]
+  (let [a0 (outer-product P Q R)
+        a1 (outer-product Q R S)
+        a2 (outer-product R S P)
+        a3 (outer-product S P Q)
+        non-colinears (filter #(not= 0 %) [a0 a1 a2 a3])]
+    (if (every? pos? non-colinears) true
+        (every? neg? non-colinears))))
+
+(convex-quadrilateral? A C B D)
+
+(defn intersect? [[A B] [C D]]
+  (convex-quadrilateral? A C B D))
+
+(intersect? [A B] [C D])
+
 #_(comment
     (draw-line [0 10] [200 40])
 
     @cam/camera
     (draw-camera @cam/camera)
-    
+
     (draw-walls)
 
     (swap! cam/camera #(cam/set-position % 100 120 180))
