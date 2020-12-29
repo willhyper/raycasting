@@ -48,12 +48,6 @@
   (doseq [wall stage/walls] (apply draw-line wall)))
 
 
-(def O [0 0])
-(def A [1 0])
-(def B [-1 0])
-(def C [0 1])
-(def D [0 -1])
-
 (defn v- [[px py] [qx qy]]
   [(- qx px) (- qy py)])
 (defn v+ [[px py] [qx qy]]
@@ -70,6 +64,9 @@
 (defn colinear? [O A B] (= 0 (outer-product O A B)))
 
 
+(defn convex-quadrilateral?
+  {:test #(let [[A B C D] [[1 0] [-1 0] [0 1] [0 -1]]]
+            (assert (convex-quadrilateral? A C B D)))}
   [P Q R S]
   (let [angles (map #(apply outer-product %) [[P Q R] [Q R S] [R S P] [S P Q]])
         non-colinears (filter #(not= 0 %) angles)]
@@ -77,10 +74,12 @@
         (every? neg? non-colinears))))
 
 
-(defn intersect? [[A B] [C D]]
+(defn intersect?
+  {:test #(let [[A B C D] [[1 0] [-1 0] [0 1] [0 -1]]]
+            (assert (intersect? [A B] [C D])))}
+  [[A B] [C D]]
   (convex-quadrilateral? A C B D))
 
-(intersect? [A B] [C D])
 
 (defn intersection
   {:test #(do (assert (= [0.5 0.5] (intersection [[0 0] [1 1]] [[0 1] [1 0]]))))}
@@ -89,7 +88,6 @@
         d (outer-product (v- C D) (v- A B))
         t (/ n d)]
     (v+ (v* B t) (v* A (- 1 t)))))
-
 
 
 #_(comment
