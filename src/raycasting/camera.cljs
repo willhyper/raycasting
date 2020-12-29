@@ -6,8 +6,8 @@
 
 (defn move-point [[x y] degree amount]
   (let [angle (* degree radian)]
-    [(+ x (three-decimal (* amount (Math/sin angle))))
-     (+ y (three-decimal (* amount (Math/cos angle))))]))
+    [(+ x (three-decimal (* amount (Math/cos angle))))
+     (+ y (three-decimal (* amount (Math/sin angle))))]))
 
 (defn move-forward
   "Move `camera` forward given `amount` respecting the `degree`."
