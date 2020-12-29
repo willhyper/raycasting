@@ -70,16 +70,12 @@
 (defn colinear? [O A B] (= 0 (outer-product O A B)))
 
 
-(defn convex-quadrilateral? [P Q R S]
-  (let [a0 (outer-product P Q R)
-        a1 (outer-product Q R S)
-        a2 (outer-product R S P)
-        a3 (outer-product S P Q)
-        non-colinears (filter #(not= 0 %) [a0 a1 a2 a3])]
-    (if (every? pos? non-colinears) true
+  [P Q R S]
+  (let [angles (map #(apply outer-product %) [[P Q R] [Q R S] [R S P] [S P Q]])
+        non-colinears (filter #(not= 0 %) angles)]
+    (or (every? pos? non-colinears)
         (every? neg? non-colinears))))
 
-(convex-quadrilateral? A C B D)
 
 (defn intersect? [[A B] [C D]]
   (convex-quadrilateral? A C B D))
