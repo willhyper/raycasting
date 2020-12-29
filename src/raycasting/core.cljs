@@ -90,14 +90,23 @@
     (v+ (v* B t) (v* A (- 1 t)))))
 
 
+(defn draw-rays [camera]
+  (let [cx (:x camera) cy (:y camera) deg (:degree camera)
+        rays-angles (->> (range -10 10 2) (map #(+ deg %)) (map #(* cam/radian %)))
+        rays (map (fn [rad] [(* 100 (Math/cos rad)) (* 100 (Math/sin rad))]) rays-angles)
+        ]
+    (doseq [[rx ry] rays]
+      (draw-line [cx cy] [(+ cx rx) (+ cy ry)]))
+    ))
+  
 #_(comment
-    (draw-line [0 10] [200 40])
 
+    (swap! cam/camera #(cam/set-position % 200 220 90))
     @cam/camera
     (draw-camera @cam/camera)
 
-    (draw-walls)
+    (draw-rays @cam/camera)
 
-    (swap! cam/camera #(cam/set-position % 100 120 180))
+    (draw-walls)
     )
 
