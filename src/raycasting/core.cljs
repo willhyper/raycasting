@@ -54,6 +54,10 @@
   [(+ qx px) (+ qy py)])
 (defn v* [[px py] s]
   [(* s px) (* s py)])
+(defn distance [[px py] [qx qy]]
+  (let [dx (- px qx)
+        dy (- py qy)]
+    (Math/sqrt (+ (* dx dx) (* dy dy)))))
 
 (defn outer-product
   ([[px py] [qx qy]] (- (* px qy) (* py qx)))
@@ -90,23 +94,27 @@
     (v+ (v* B t) (v* A (- 1 t)))))
 
 
-(defn draw-rays [camera]
+(defn _intersect-ray [[start end :as ray] wall]
+  (if (intersect? ray wall) [start (intersection ray wall)] ray))
+
+(defn intersect-ray [ray walls]
+  (->> walls (map #(_intersect-ray ray %)) (apply min-key #(apply distance %))))
+
+(defn cast-rays [camera walls]
   (let [cx (:x camera) cy (:y camera) deg (:degree camera)
         rays-angles (->> (range -10 10 2) (map #(+ deg %)) (map #(* cam/radian %)))
-        rays (map (fn [rad] [(* 100 (Math/cos rad)) (* 100 (Math/sin rad))]) rays-angles)
-        ]
-    (doseq [[rx ry] rays]
-      (draw-line [cx cy] [(+ cx rx) (+ cy ry)]))
-    ))
-  
+        rays-vector (map (fn [rad] [(* 100 (Math/cos rad)) (* 100 (Math/sin rad))]) rays-angles)
+        rays (map (fn [[rx ry]] [[cx cy] [(+ cx rx) (+ cy ry)]]) rays-vector)
+        rays-intersected (map #(intersect-ray % walls) rays)]
+
+    (doseq [ray rays-intersected]
+      (apply draw-line ray))))
+
+
 #_(comment
-
-    (swap! cam/camera #(cam/set-position % 200 220 90))
-    @cam/camera
-    (draw-camera @cam/camera)
-
-    (draw-rays @cam/camera)
-
     (draw-walls)
+    (swap! cam/camera #(cam/set-position % 60 80 90))
+    (draw-camera @cam/camera)
+    (cast-rays @cam/camera stage/walls)
     )
 
