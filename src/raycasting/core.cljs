@@ -6,7 +6,7 @@
 
 (defonce ^:dynamic *canvas* nil)
 (defonce ^:dynamic *ctx* nil)
-
+(defonce ^:dynamic *msg* nil)
 
 (defn draw-line
   ([[x1 y1] [x2 y2]]
@@ -167,7 +167,10 @@
     (. *canvas* addEventListener "mousedown" input/on-click)
     (when (. *canvas* -getContext)
       (set! *ctx* (. *canvas* getContext "2d"))
-      (render))))
+      (render)))
+  (when-let [msg (. js/document getElementById "message")]
+    (set! *msg* msg)
+    (set! (. *msg* -innerHTML) "message!")))
 
 (defn stop []
   ;; stop is called before any code is reloaded
