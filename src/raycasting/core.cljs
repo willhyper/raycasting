@@ -1,23 +1,11 @@
 (ns raycasting.core
   (:require [raycasting.camera :as cam])
-  (:require [raycasting.stage :as stage]))
+  (:require [raycasting.stage :as stage])
+  (:require [raycasting.input :as input]))
 
 
 (defonce ^:dynamic *canvas* nil)
 (defonce ^:dynamic *ctx* nil)
-
-(defn ^:export init []
-  (when-let [canvas (. js/document getElementById "raycaster")]
-    (set! *canvas* canvas)
-    (when (. *canvas* -getContext)
-      (set! *ctx* (. *canvas* getContext "2d"))
-      (set! (. *ctx* -fillStyle) "yellow")
-      (. *ctx* fillRect 0 0 512 512))))
-
-(defn stop []
-  ;; stop is called before any code is reloaded
-  ;; this is controlled by :before-load in the config
-  (js/console.log "stop"))
 
 
 (defn draw-line
@@ -84,6 +72,10 @@
   [[A B] [C D]]
   (convex-quadrilateral? A C B D))
 
+(defn collides?
+  "Check if `path` intersects with any `stage` walls."
+  [ray walls]
+  (some true? (map #(intersect? % ray) walls)))
 
 (defn intersection
   {:test #(do (assert (= [0.5 0.5] (intersection [[0 0] [1 1]] [[0 1] [1 0]]))))}
@@ -110,11 +102,77 @@
     (doseq [ray rays-intersected]
       (apply draw-line ray))))
 
+(defn move-camera!
+  "Handles `camera` movement within `stage`. Accepts `camera` and
+  `key-states` atoms."
+  [camera key-states stage]
+  (let [{x :x y :y :as current-pos} @camera
+        states @key-states
+        step-size 0.8
+        rotate-angle 1.5
+        extra-step (+ step-size 1.5)]
 
-#_(comment
-    (draw-walls)
-    (swap! cam/camera #(cam/set-position % 60 80 90))
-    (draw-camera @cam/camera)
-    (cast-rays @cam/camera stage/walls)
-    )
+    (when (states "Escape")
+      (input/release-focus)
+      (reset! key-states {}))
+
+    (when (states "ArrowRight")
+      (if (states "Shift")
+        (let [{x' :x y' :y} (cam/strafe current-pos (- extra-step))]
+          (when (not (collides? [[x y] [x' y']] stage))
+            (swap! camera cam/strafe (- step-size))))
+        (swap! camera cam/rotate (- rotate-angle))))
+
+    (when (states "ArrowLeft")
+      (if (states "Shift")
+        (let [{x' :x y' :y} (cam/strafe current-pos extra-step)]
+          (when (not (collides?  [[x y] [x' y']] stage))
+            (swap! camera cam/strafe step-size)))
+        (swap! camera cam/rotate rotate-angle)))
+
+    (when (states "ArrowUp")
+      (let [{x' :x y' :y} (cam/move-forward current-pos extra-step)]
+        (when (not (collides?  [[x y] [x' y']] stage))
+          (swap! camera cam/move-forward step-size))))
+
+    (when (states "ArrowDown")
+      (let [{x' :x y' :y} (cam/move-forward current-pos (- extra-step))]
+        (when (not (collides?  [[x y] [x' y']] stage))
+          (swap! cam/camera cam/move-forward (- step-size)))))))
+
+(defn clear-rect []
+  (let [height (. *canvas* -height)
+        width (. *canvas* -width)]
+    (. *ctx* clearRect 0 0 width height)))
+
+(defn render []
+  (move-camera! cam/camera input/key-states stage/walls)
+  (clear-rect)
+  (draw-walls)
+  (draw-camera @cam/camera)
+  (cast-rays @cam/camera stage/walls)
+  (. js/window requestAnimationFrame render) ; this is like a loop
+  )
+
+(defn init-inputs []
+  (set! (. js/window -onkeyup) input/on-key-release)
+  (set! (. js/window -onkeydown) input/on-key-press)
+  (swap! cam/camera #(cam/set-position % 60 80 90)))
+
+
+(defn ^:export init []
+  (init-inputs)
+  (when-let [canvas (. js/document getElementById "raycaster")]
+    (set! *canvas* canvas)
+    (. *canvas* addEventListener "mousedown" input/on-click)
+    (when (. *canvas* -getContext)
+      (set! *ctx* (. *canvas* getContext "2d"))
+      (render))))
+
+(defn stop []
+  ;; stop is called before any code is reloaded
+  ;; this is controlled by :before-load in the config
+  (js/console.log "stop"))
+
+#_(comment)
 

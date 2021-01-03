@@ -33,6 +33,16 @@
   ([cam x y deg] (assoc cam :x x :y y :degree deg))
 )
 
+(defn strafe
+  "Move `camera` to the side given `amount` respecting the `degree`."
+  ([camera] (move-forward camera 1))
+  ([camera amount]
+   (let [{x :x
+          y :y
+          degree :degree} camera
+         [x y] (move-point [x y] (mod (+ degree 90) 360.0) amount)]
+     (assoc camera :x x :y y))))
+
 #_(comment
     (:degree @camera)
 
