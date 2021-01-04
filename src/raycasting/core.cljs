@@ -154,26 +154,28 @@
   (. js/window requestAnimationFrame render) ; this is like a loop
   )
 
-(defn init-inputs []
-  (swap! cam/camera #(cam/set-position % 60 80 90)))
 
 (defn on-keydown [event]
   (let [key (.-key event)]
     (set! (. *msg* -innerHTML) key)))
 
 (defn ^:export init []
-  (init-inputs)
   (when-let [canvas (. js/document getElementById "raycaster")]
-    (set! *canvas* canvas)
-    (. *canvas* addEventListener "mousedown" input/on-click)
-    (. *canvas* addEventListener "keydown" input/on-key-press)
-    (. *canvas* addEventListener "keyup" input/on-key-release)
-    (when (. *canvas* -getContext)
-      (set! *ctx* (. *canvas* getContext "2d"))
-      (render)))
+    (set! *canvas* canvas))
+  (when-let [ctx (. *canvas* getContext "2d")]
+    (set! *ctx* ctx))
   (when-let [msg (. js/document getElementById "message")]
-    (set! *msg* msg)
-    (. *canvas* addEventListener "keydown" on-keydown)))
+    (set! *msg* msg))
+
+  (if (or (nil? *canvas*) (nil? *ctx*) (nil? *msg*))
+    (.log js/console "error! cannot find reference to *canvas*, *ctx*, or *msg*")
+    (do
+      (. *canvas* addEventListener "mousedown" input/on-click)
+      (. *canvas* addEventListener "keydown" input/on-key-press)
+      (. *canvas* addEventListener "keyup" input/on-key-release)
+      (. *canvas* addEventListener "keydown" on-keydown)
+      (swap! cam/camera #(cam/set-position % 60 80 90))
+      (render))))
 
 (defn stop []
   ;; stop is called before any code is reloaded
