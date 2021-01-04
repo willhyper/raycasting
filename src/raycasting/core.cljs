@@ -159,6 +159,9 @@
   (set! (. js/window -onkeydown) input/on-key-press)
   (swap! cam/camera #(cam/set-position % 60 80 90)))
 
+(defn on-keydown [event]
+  (let [key (.-key event)]
+    (set! (. *msg* -innerHTML) key)))
 
 (defn ^:export init []
   (init-inputs)
@@ -170,7 +173,7 @@
       (render)))
   (when-let [msg (. js/document getElementById "message")]
     (set! *msg* msg)
-    (set! (. *msg* -innerHTML) "message!")))
+    (. *canvas* addEventListener "keydown" on-keydown)))
 
 (defn stop []
   ;; stop is called before any code is reloaded
