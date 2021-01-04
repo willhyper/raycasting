@@ -155,8 +155,6 @@
   )
 
 (defn init-inputs []
-  (set! (. js/window -onkeyup) input/on-key-release)
-  (set! (. js/window -onkeydown) input/on-key-press)
   (swap! cam/camera #(cam/set-position % 60 80 90)))
 
 (defn on-keydown [event]
@@ -168,6 +166,8 @@
   (when-let [canvas (. js/document getElementById "raycaster")]
     (set! *canvas* canvas)
     (. *canvas* addEventListener "mousedown" input/on-click)
+    (. *canvas* addEventListener "keydown" input/on-key-press)
+    (. *canvas* addEventListener "keyup" input/on-key-release)
     (when (. *canvas* -getContext)
       (set! *ctx* (. *canvas* getContext "2d"))
       (render)))
