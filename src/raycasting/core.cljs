@@ -151,13 +151,14 @@
   (draw-walls)
   (draw-camera @cam/camera)
   (cast-rays @cam/camera stage/walls)
-  (. js/window requestAnimationFrame render) ; this is like a loop
   )
 
 
 (defn on-keydown [event]
   (let [key (.-key event)]
-    (set! (. *msg* -innerHTML) key)))
+    (set! (. *msg* -innerHTML) key)
+    (render)
+    ))
 
 (defn ^:export init []
   (if-let [canvas (. js/document getElementById "raycaster")]
