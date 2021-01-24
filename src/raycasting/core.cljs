@@ -146,7 +146,6 @@
     (. *ctx* clearRect 0 0 width height)))
 
 (defn render []
-  (move-camera! cam/camera input/key-states stage/walls)
   (clear-rect)
   (draw-walls)
   (draw-camera @cam/camera)
@@ -156,8 +155,10 @@
 
 (defn on-keydown [event]
   (let [key (.-key event)]
-    (set! (. *msg* -innerHTML) key)
-    (render)
+    (set! (. *msg* -innerHTML) key) ; update msg
+    (move-camera! cam/camera input/key-states stage/walls) ; update camera
+    (input/on-key-press event) ; update key-state
+    (render) ; update canvas
     ))
 
 (defn ^:export init []
@@ -169,7 +170,6 @@
     (set! *msg* msg) (throw {:message "cannot get message"}))
 
   (. *canvas* addEventListener "mousedown" input/on-click)
-  (. *canvas* addEventListener "keydown" input/on-key-press)
   (. *canvas* addEventListener "keyup" input/on-key-release)
   (. *canvas* addEventListener "keydown" on-keydown)
   (swap! cam/camera #(cam/set-position % 60 80 90))
