@@ -1,3 +1,6 @@
 .calva/
 .shadow-cljs/
 public/js/
+.clj-kondo/
+node_modules/
+.lsp
