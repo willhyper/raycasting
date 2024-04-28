@@ -7,19 +7,12 @@
                     :refer [three-decimal]
                     :as m]))
 
-
-
 (defonce ^:dynamic *canvas* nil)
 (defonce ^:dynamic *ctx* nil)
 (defonce ^:dynamic *msg* nil)
 
 (defonce ^:dynamic *ray-count* 42)
 (defonce ^:dynamic *fov* 60)
-(defonce ^:dynamic *compensate-fisheye* true)
-
-(def max-fov 360)
-(def max-compensated-fov 180)
-(def infinity 100000)
 
 
 (defn draw-line
@@ -218,6 +211,4 @@
   ;; stop is called before any code is reloaded
   ;; this is controlled by :before-load in the config
   (js/console.log "stop"))
-
-#_(comment)
 
