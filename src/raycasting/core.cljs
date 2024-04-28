@@ -2,6 +2,7 @@
   (:require [raycasting.camera :as cam])
   (:require [raycasting.stage :as stage])
   (:require [raycasting.input :as input])
+  (:require [raycasting.math :as math])
   (:require-macros [raycasting.macros
                     :refer [three-decimal]
                     :as m]))
@@ -49,61 +50,12 @@
   (doseq [wall stage/walls] (apply draw-line wall)))
 
 
-(defn v- [[px py] [qx qy]]
-  [(- qx px) (- qy py)])
-(defn v+ [[px py] [qx qy]]
-  [(+ qx px) (+ qy py)])
-(defn v* [[px py] s]
-  [(* s px) (* s py)])
-(defn distance [[px py] [qx qy]]
-  (let [dx (- px qx)
-        dy (- py qy)]
-    (Math/sqrt (+ (* dx dx) (* dy dy)))))
-
-(defn outer-product
-  ([[px py] [qx qy]] (- (* px qy) (* py qx)))
-  ([O A B] (outer-product (v- O A) (v- O B))))
-
-(defn ccw? [O A B] (pos? (outer-product O A B)))
-(defn cw?  [O A B] (neg? (outer-product O A B)))
-(defn colinear? [O A B] (= 0 (outer-product O A B)))
-
-
-(defn convex-quadrilateral?
-  {:test #(let [[A B C D] [[1 0] [-1 0] [0 1] [0 -1]]]
-            (assert (convex-quadrilateral? A C B D)))}
-  [P Q R S]
-  (let [angles (map #(apply outer-product %) [[P Q R] [Q R S] [R S P] [S P Q]])
-        non-colinears (filter #(not= 0 %) angles)]
-    (or (every? pos? non-colinears)
-        (every? neg? non-colinears))))
-
-
-(defn intersect?
-  {:test #(let [[A B C D] [[1 0] [-1 0] [0 1] [0 -1]]]
-            (assert (intersect? [A B] [C D])))}
-  [[A B] [C D]]
-  (convex-quadrilateral? A C B D))
-
-(defn collides?
-  "Check if `path` intersects with any `stage` walls."
-  [ray walls]
-  (some true? (map #(intersect? % ray) walls)))
-
-(defn intersection
-  {:test #(do (assert (= [0.5 0.5] (intersection [[0 0] [1 1]] [[0 1] [1 0]]))))}
-  [[A B] [C D]]
-  (let [n (outer-product (v- C D) (v- A C))
-        d (outer-product (v- C D) (v- A B))
-        t (/ n d)]
-    (v+ (v* B t) (v* A (- 1 t)))))
-
 
 (defn _intersect-ray [[start end :as ray] wall]
-  (if (intersect? ray wall) [start (intersection ray wall)] ray))
+  (if (math/intersect? ray wall) [start (math/intersection ray wall)] ray))
 
 (defn intersect-ray [ray walls]
-  (->> walls (map #(_intersect-ray ray %)) (apply min-key #(apply distance %))))
+  (->> walls (map #(_intersect-ray ray %)) (apply min-key #(apply math/distance %))))
 
 (defn cast-rays [camera walls]
   (let [cx (:x camera) cy (:y camera) deg (:degree camera)
@@ -133,25 +85,25 @@
     (when (states "ArrowRight")
       (if (states "Shift")
         (let [{x' :x y' :y} (cam/strafe current-pos (- extra-step))]
-          (when (not (collides? [[x y] [x' y']] stage))
+          (when (not (math/collides? [[x y] [x' y']] stage))
             (swap! camera cam/strafe (- step-size))))
         (swap! camera cam/rotate (- rotate-angle))))
 
     (when (states "ArrowLeft")
       (if (states "Shift")
         (let [{x' :x y' :y} (cam/strafe current-pos extra-step)]
-          (when (not (collides?  [[x y] [x' y']] stage))
+          (when (not (math/collides?  [[x y] [x' y']] stage))
             (swap! camera cam/strafe step-size)))
         (swap! camera cam/rotate rotate-angle)))
 
     (when (states "ArrowUp")
       (let [{x' :x y' :y} (cam/move-forward current-pos extra-step)]
-        (when (not (collides?  [[x y] [x' y']] stage))
+        (when (not (math/collides?  [[x y] [x' y']] stage))
           (swap! camera cam/move-forward step-size))))
 
     (when (states "ArrowDown")
       (let [{x' :x y' :y} (cam/move-forward current-pos (- extra-step))]
-        (when (not (collides?  [[x y] [x' y']] stage))
+        (when (not (math/collides?  [[x y] [x' y']] stage))
           (swap! cam/camera cam/move-forward (- step-size)))))))
 
 (defn reset-rect []
@@ -210,7 +162,7 @@
         ray-width (/ W ray-count)
         horizon (/ H 2)
         
-        ray-dists (map  (fn [[s d]] (distance s d))
+        ray-dists (map  (fn [[s d]] (math/distance s d))
                         rays)
         wall-heights ray-dists]
     
