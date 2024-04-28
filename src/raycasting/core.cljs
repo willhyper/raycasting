@@ -202,11 +202,11 @@
 
 (defn ^:export init []
   (if-let [canvas (. js/document getElementById "raycaster")]
-    (set! *canvas* canvas) (throw {:message "cannot get canvas"}))
+    (set! *canvas* canvas) (throw (ex-info "cannot get canvas" {})))
   (if-let [ctx (. *canvas* getContext "2d")]
-    (set! *ctx* ctx) (throw {:message "cannot get context"}))
+    (set! *ctx* ctx) (throw (ex-info "cannot get context" {})))
   (if-let [msg (. js/document getElementById "message")]
-    (set! *msg* msg) (throw {:message "cannot get message"}))
+    (set! *msg* msg) (throw (ex-info "cannot get message" {})))
 
   (. *canvas* addEventListener "mousedown" input/on-click)
   (. *canvas* addEventListener "keyup" input/on-key-release)
