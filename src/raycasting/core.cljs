@@ -38,14 +38,14 @@
       (input/release-focus)
       (reset! key-states {}))
 
-    (when (states "ArrowRight")
+    (when (states "ArrowLeft")
       (if (states "Shift")
         (let [{x' :x y' :y} (cam/strafe current-pos (- extra-step))]
           (when (not (math/collides? [[x y] [x' y']] stage))
             (swap! camera cam/strafe (- step-size))))
         (swap! camera cam/rotate (- rotate-angle))))
 
-    (when (states "ArrowLeft")
+    (when (states "ArrowRight")
       (if (states "Shift")
         (let [{x' :x y' :y} (cam/strafe current-pos extra-step)]
           (when (not (math/collides?  [[x y] [x' y']] stage))
