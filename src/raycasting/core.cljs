@@ -63,7 +63,7 @@
           (swap! cam/camera cam/move-forward (- step-size)))))))
 
 (defn render []
-  
+  (move-camera! cam/camera input/key-states stage/walls)
   (let
    [rays (cast-rays @cam/camera stage/walls)]
 
@@ -78,7 +78,7 @@
     (set! (. *msg* -innerHTML) key) ; update msg
     
     (input/on-key-press event) ; update key-state
-    (move-camera! cam/camera input/key-states stage/walls)
+    
     (render) ; update canvas
     ))
 
