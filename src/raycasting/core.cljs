@@ -4,18 +4,11 @@
   (:require [raycasting.input :as input])
   (:require [raycasting.math :as math])
   (:require [raycasting.map :as map])
-  (:require-macros [raycasting.macros
-                    :refer [three-decimal]
-                    :as m]))
+  (:require [raycasting.perspective :as perspective]))
 
 (defonce ^:dynamic *canvas* nil)
 (defonce ^:dynamic *ctx* nil)
 (defonce ^:dynamic *msg* nil)
-
-(defonce ^:dynamic *ray-count* 42)
-(defonce ^:dynamic *fov* 60)
-
-
 
 (defn _intersect-ray [[start end :as ray] wall]
   (if (math/intersect? ray wall) [start (math/intersection ray wall)] ray))
@@ -69,113 +62,23 @@
         (when (not (math/collides?  [[x y] [x' y']] stage))
           (swap! cam/camera cam/move-forward (- step-size)))))))
 
-
-(defn draw-ground []
-  (let [H (. *canvas* -height)
-        W (. *canvas* -width)
-        horizon (/ H 2)
-        horizon-to-ground (- H horizon)]
-    (set! (.-fillStyle *ctx*) "brown")
-    (. *ctx* fillRect 0 horizon W horizon-to-ground)))
-
-(defn draw-sky []
-  (let [H (. *canvas* -height)
-        W (. *canvas* -width)
-        horizon (/ H 2)
-        gradient (.createLinearGradient *ctx* 0 0 0 horizon)]
-    (doto gradient
-      (.addColorStop 0 "blue")
-      (.addColorStop 1 "white"))
-    (set! (.-fillStyle *ctx*) gradient)
-    (. *ctx* fillRect 0 0 W horizon)))
-
-(defn reset-rect []
-  (let [H (. *canvas* -height)
-        W (. *canvas* -width)]
-    (. *ctx* clearRect 0 0 W H)
-    (draw-ground)
-    (draw-sky)
-    ))
-
-
-(defn projection-distance
-  "Calculate projection distance between player and projection plane."
-  []
-  (three-decimal
-   (/ (/ *ray-count* 2) (Math/atan (* (/ *fov* 2) cam/radian)))))
-
-(defn dim
-  "Dims two digit hex encoded color by some `amount`."
-  [color amount]
-  (let [dim-factor (Math/pow 1.1 (/ (inc amount) 7))
-        color (int (/ color dim-factor))]
-    (if (< color 25)
-      25
-      color)))
-
-
-(defn dim-color
-  "Parses six digit hex encoded color string (#000000) and returns a
-  darker rgb color string."
-  [color distance]
-  (let [red (js/parseInt (str "0x" (subs color 1 3)))
-        green (js/parseInt (str "0x" (subs color 3 5)))
-        blue (js/parseInt (str "0x" (subs color 5)))]
-    (str "rgb("
-         (dim red distance)
-         ", "
-         (dim green distance)
-         ", "
-         (dim blue distance)
-         ")")))
-
-
-
-(defn draw-3d-wall
-  "Draws pseudo 3d stage on `*canvas*`."
-  [rays]
-
-  (let [H (.-height *canvas*)
-        W (.-width *canvas*)
-        ray-count (count rays)
-        ray-width (/ W ray-count)
-        horizon (/ H 2)
-        
-        ray-dists (map  (fn [[s d]] (math/distance s d))
-                        rays)
-        wall-heights ray-dists]
-    
-    (set! (.-fillStyle *ctx*) "gray")
-
-    (doseq [[i wall-height] (zipmap (range) wall-heights)]
-      (let [wall-left-pos (* i ray-width)
-            wall-width ray-width
-            wall-ground-pos (- horizon (/ wall-height 2))]
-        (.fillRect *ctx* wall-left-pos wall-ground-pos wall-width wall-height)))))
-
-
-(comment)
-
 (defn render []
   
-  (reset-rect)
   (let
    [rays (cast-rays @cam/camera stage/walls)]
 
-    (draw-3d-wall rays)
-
-    (move-camera! cam/camera input/key-states stage/walls)
-
+    (perspective/draw-persepctive *canvas* *ctx* rays)
     (map/draw-map *ctx* rays)    
-    
+
     (. js/window requestAnimationFrame render); this is like a loop
     ))
 
 (defn on-keydown [event]
   (let [key (.-key event)]
     (set! (. *msg* -innerHTML) key) ; update msg
-    (move-camera! cam/camera input/key-states stage/walls) ; update camera
+    
     (input/on-key-press event) ; update key-state
+    (move-camera! cam/camera input/key-states stage/walls)
     (render) ; update canvas
     ))
 
