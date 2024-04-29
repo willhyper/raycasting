@@ -69,18 +69,34 @@
         (when (not (math/collides?  [[x y] [x' y']] stage))
           (swap! cam/camera cam/move-forward (- step-size)))))))
 
-(defn reset-rect []
+
+(defn draw-ground []
   (let [H (. *canvas* -height)
         W (. *canvas* -width)
         horizon (/ H 2)
         horizon-to-ground (- H horizon)]
-    (. *ctx* clearRect 0 0 W H)
-    
-    (set! (.-fillStyle *ctx*) "lightblue")
-    (. *ctx* fillRect 0 0 W horizon)
-
     (set! (.-fillStyle *ctx*) "brown")
     (. *ctx* fillRect 0 horizon W horizon-to-ground)))
+
+(defn draw-sky []
+  (let [H (. *canvas* -height)
+        W (. *canvas* -width)
+        horizon (/ H 2)
+        gradient (.createLinearGradient *ctx* 0 0 0 horizon)]
+    (doto gradient
+      (.addColorStop 0 "blue")
+      (.addColorStop 1 "white"))
+    (set! (.-fillStyle *ctx*) gradient)
+    (. *ctx* fillRect 0 0 W horizon)))
+
+(defn reset-rect []
+  (let [H (. *canvas* -height)
+        W (. *canvas* -width)]
+    (. *ctx* clearRect 0 0 W H)
+    (draw-ground)
+    (draw-sky)
+    ))
+
 
 (defn projection-distance
   "Calculate projection distance between player and projection plane."
