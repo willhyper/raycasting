@@ -6,9 +6,9 @@
   (:require [raycasting.map :as map])
   (:require [raycasting.perspective :as perspective]))
 
-(defonce ^:dynamic *canvas* nil)
-(defonce ^:dynamic *ctx* nil)
-(defonce ^:dynamic *msg* nil)
+(defonce ^:dynamic *canvas* (. js/document getElementById "raycaster"))
+(defonce ^:dynamic *ctx* (. *canvas* getContext "2d"))
+(defonce ^:dynamic *msg* (. js/document getElementById "message"))
 
 (defn _intersect-ray [[start end :as ray] wall]
   (if (math/intersect? ray wall) [start (math/intersection ray wall)] ray))
@@ -83,13 +83,6 @@
     ))
 
 (defn ^:export init []
-  (if-let [canvas (. js/document getElementById "raycaster")]
-    (set! *canvas* canvas) (throw (ex-info "cannot get canvas" {})))
-  (if-let [ctx (. *canvas* getContext "2d")]
-    (set! *ctx* ctx) (throw (ex-info "cannot get context" {})))
-  (if-let [msg (. js/document getElementById "message")]
-    (set! *msg* msg) (throw (ex-info "cannot get message" {})))
-
   (. *canvas* addEventListener "mousedown" input/on-click)
   (. *canvas* addEventListener "keyup" input/on-key-release)
   (. *canvas* addEventListener "keydown" on-keydown)
