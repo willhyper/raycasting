@@ -3,6 +3,7 @@
   (:require [raycasting.stage :as stage])
   (:require [raycasting.input :as input])
   (:require [raycasting.math :as math])
+  (:require [raycasting.map :as map])
   (:require-macros [raycasting.macros
                     :refer [three-decimal]
                     :as m]))
@@ -13,34 +14,6 @@
 
 (defonce ^:dynamic *ray-count* 42)
 (defonce ^:dynamic *fov* 60)
-
-
-(defn draw-line
-  ([[x1 y1] [x2 y2]]
-   (draw-line [x1 y1] [x2 y2] "#000000"))
-  ([[x1 y1] [x2 y2] color]
-   (set! (. *ctx* -strokeStyle) color)
-   (doto *ctx*
-     (.beginPath)
-     (.moveTo x1 y1)
-     (.lineTo x2 y2)
-     (.stroke)))) ; draw it https://www.w3schools.com/tags/canvas_beginpath.asp
-
-
-
-(defn draw-camera
-  "Draws `camera` on canvas, specified by `*ctx*`."
-  [camera]
-  (let [[x y :as pos] [(:x camera) (:y camera)]
-        pointer (cam/move-point pos (:degree camera) 7)
-        width 10
-        color "#000000"]
-    (draw-line pos pointer color)
-    (set! (. *ctx* -fillStyle) color)
-    (. *ctx* fillRect (- x (/ width 2)) (- y (/ width 2)) width width)))
-
-(defn draw-walls []
-  (doseq [wall stage/walls] (apply draw-line wall)))
 
 
 
@@ -56,9 +29,6 @@
         rays-vector (map (fn [rad] [(* 100 (Math/cos rad)) (* 100 (Math/sin rad))]) rays-angles)
         rays (map (fn [[rx ry]] [[cx cy] [(+ cx rx) (+ cy ry)]]) rays-vector)
         rays-intersected (map #(intersect-ray % walls) rays)]
-
-    (doseq [ray rays-intersected]
-      (apply draw-line ray))
     rays-intersected))
 
 (defn move-camera!
@@ -171,17 +141,17 @@
 (comment)
 
 (defn render []
+  
+  (reset-rect)
   (let
    [rays (cast-rays @cam/camera stage/walls)]
 
-    (reset-rect)
     (draw-3d-wall rays)
 
     (move-camera! cam/camera input/key-states stage/walls)
 
-    (draw-walls)
-    (draw-camera @cam/camera)
-    (cast-rays @cam/camera stage/walls)
+    (map/draw-map *ctx* rays)    
+    
     (. js/window requestAnimationFrame render); this is like a loop
     ))
 
