@@ -43,13 +43,8 @@
 
          ray-dists (map  (fn [[s d]] (math/distance s d))
                          rays)
-         ray-angles (map  (fn [[s d]] (math/angle s d))
-                          rays)
-         ray-middle-angle (math/middle ray-angles)
-         ray-angles-diff (map #(- % ray-middle-angle) ray-angles)
-         ray-angles-cos (map #(Math/abs (Math/cos (* % math/radian))) ray-angles-diff)
-         ray-projected-dists (map * ray-dists ray-angles-cos)
-         wall-heights (->> ray-projected-dists
+         
+         wall-heights (->> ray-dists
                            (map #(/ % *inf*))
                            (map #(- 1 %))
                            (map #(* H (/ % 2))))]
