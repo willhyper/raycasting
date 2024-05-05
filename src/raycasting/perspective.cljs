@@ -36,7 +36,7 @@
 
          rays (map first rays-colored)
          colors (vec (map last rays-colored))
-         colors (vec (map last colors))
+         
          
          ray-count (count rays)
          ray-width (/ W ray-count)

@@ -10,9 +10,9 @@
 (defonce ^:dynamic *ctx* (. *canvas* getContext "2d"))
 (defonce ^:dynamic *msg* (. js/document getElementById "message"))
 
-(defn _intersect-ray [[start end :as ray] wall]
+(defn _intersect-ray [[start end :as ray] [wstart wend wcolor :as wall]]
   (if (math/intersect? ray wall) 
-    [ [start (math/intersection ray wall)] wall] 
+    [ [start (math/intersection ray wall)] wcolor] 
     [ ray nil]))
 
 (defn intersect-ray [ray walls]
