@@ -1,7 +1,6 @@
 (ns raycasting.perspective
   (:require [raycasting.math :as math])
-  (:require [raycasting.macros :as m])
-  (:require [raycasting.camera :as cam]))
+  (:require [raycasting.macros :as m]))
 
  (defonce ^:dynamic *ray-count* 42)
  (defonce ^:dynamic *fov* 60)
