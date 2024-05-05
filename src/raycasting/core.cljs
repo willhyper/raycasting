@@ -18,7 +18,9 @@
 
 (defn cast-rays [camera walls]
   (let [cx (:x camera) cy (:y camera) deg (:degree camera)
-        rays-angles (->> (range -10 10 2) (map #(+ deg %)) (map #(* cam/radian %)))
+        rays-angles (->> (range -10 10 1) 
+                         (map #(+ deg %)) 
+                         (map #(* math/radian %)))
         rays-vector (map (fn [rad] [(* 100 (Math/cos rad)) (* 100 (Math/sin rad))]) rays-angles)
         rays (map (fn [[rx ry]] [[cx cy] [(+ cx rx) (+ cy ry)]]) rays-vector)
         rays-intersected (map #(intersect-ray % walls) rays)]
