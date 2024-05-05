@@ -6,6 +6,7 @@
  (defonce ^:dynamic *ray-count* 42)
  (defonce ^:dynamic *fov* 60)
 
+ (defonce ^:dynamic *inf* 100)
 
 
  (defn draw-ground [canvas ctx]
@@ -43,8 +44,17 @@
 
          ray-dists (map  (fn [[s d]] (math/distance s d))
                          rays)
-         wall-heights ray-dists]
-
+         ray-angles (map  (fn [[s d]] (math/angle s d))
+                          rays)
+         ray-middle-angle (math/middle ray-angles)
+         ray-angles-diff (map #(- % ray-middle-angle) ray-angles)
+         ray-angles-cos (map #(Math/cos (* % math/radian)) ray-angles-diff)
+         ray-projected-dists (map * ray-dists ray-angles-cos)
+         wall-heights (->> ray-projected-dists
+                           (map #(/ % *inf*))
+                           (map #(- 1 %))
+                           (map #(* H (/ % 2))))]
+     
      (set! (.-fillStyle ctx) "gray")
 
      (doseq [[i wall-height] (zipmap (range) wall-heights)]
