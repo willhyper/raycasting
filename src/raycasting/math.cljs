@@ -54,3 +54,9 @@
         d (outer-product (v- C D) (v- A B))
         t (/ n d)]
     (v+ (v* B t) (v* A (- 1 t)))))
+
+(defn middle 
+  {:test #(do (assert (= 3 (middle [0 1 2 3 4 5]))))}
+  [lst]
+  (let [n (count lst)]
+    (nth lst (quot n 2))))
