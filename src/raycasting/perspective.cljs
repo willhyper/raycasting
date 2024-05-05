@@ -75,7 +75,7 @@
   "Calculate projection distance between player and projection plane."
   []
   (m/three-decimal
-   (/ (/ *ray-count* 2) (Math/atan (* (/ *fov* 2) cam/radian)))))
+   (/ (/ *ray-count* 2) (Math/atan (* (/ *fov* 2) math/radian)))))
 
 (defn dim
   "Dims two digit hex encoded color by some `amount`."
