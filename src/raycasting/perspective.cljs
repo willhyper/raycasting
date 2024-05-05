@@ -1,9 +1,6 @@
 (ns raycasting.perspective
-  (:require [raycasting.math :as math])
-  (:require [raycasting.macros :as m]))
+  (:require [raycasting.math :as math]))
 
- (defonce ^:dynamic *ray-count* 42)
- (defonce ^:dynamic *fov* 60)
 
  (defonce ^:dynamic *inf* 100)
 
@@ -63,14 +60,6 @@
    (draw-sky canvas ctx)
    (draw-3d-wall canvas ctx rays))
  
-
-
-
-(defn projection-distance
-  "Calculate projection distance between player and projection plane."
-  []
-  (m/three-decimal
-   (/ (/ *ray-count* 2) (Math/atan (* (/ *fov* 2) math/radian)))))
 
 (defn dim
   "Dims two digit hex encoded color by some `amount`."
