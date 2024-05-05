@@ -1,8 +1,7 @@
 (ns raycasting.perspective
   (:require [raycasting.math :as math]))
 
-
- (defonce ^:dynamic *inf* 100)
+ (defonce ^:dynamic *inf* 100) ; ray length of 100 is treated as infinity
 
 
  (defn draw-ground [canvas ctx]

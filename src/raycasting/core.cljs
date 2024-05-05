@@ -25,7 +25,8 @@
         rays-angles (->> (range -10 10 1) 
                          (map #(+ deg %)) 
                          (map #(* math/radian %)))
-        rays-vector (map (fn [rad] [(* 100 (Math/cos rad)) (* 100 (Math/sin rad))]) rays-angles)
+        rays-vector (map (fn [rad] [(* perspective/*inf* (Math/cos rad)) 
+                                    (* perspective/*inf* (Math/sin rad))]) rays-angles)
         rays (map (fn [[rx ry]] [[cx cy] [(+ cx rx) (+ cy ry)]]) rays-vector)
         rays-intersected (map #(intersect-ray % walls) rays)]
     rays-intersected))
