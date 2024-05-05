@@ -12,13 +12,14 @@
 
 (defn _intersect-ray [[start end :as ray] wall]
   (if (math/intersect? ray wall) 
-    [start (math/intersection ray wall)] 
-    ray))
+    [ [start (math/intersection ray wall)] wall] 
+    [ ray nil]))
 
 (defn intersect-ray [ray walls]
   (->> walls
        (map #(_intersect-ray ray %))
-       (apply min-key #(apply math/distance %))))
+       (apply min-key #(apply math/distance (first %)))))
+  
 
 (defn cast-rays [camera walls]
   (let [cx (:x camera) cy (:y camera) deg (:degree camera)

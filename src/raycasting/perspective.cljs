@@ -29,10 +29,15 @@
      (. ctx clearRect 0 0 W H)))
 
  (defn draw-3d-wall
-   [canvas ctx rays]
+   [canvas ctx rays-colored]
 
    (let [H (.-height canvas)
          W (.-width canvas)
+
+         rays (map first rays-colored)
+         colors (vec (map last rays-colored))
+         colors (vec (map last colors))
+         
          ray-count (count rays)
          ray-width (/ W ray-count)
          horizon (/ H 2)
@@ -44,13 +49,14 @@
                            (map #(/ % *inf*))
                            (map #(- 1 %))
                            (map #(* H (/ % 2))))]
-     
-     (set! (.-fillStyle ctx) "gray")
 
      (doseq [[i wall-height] (zipmap (range) wall-heights)]
        (let [wall-left-pos (* i ray-width)
              wall-width (+ 1 ray-width)
-             wall-ground-pos (- horizon (/ wall-height 2))]
+             wall-ground-pos (- horizon (/ wall-height 2))
+             color (nth colors i)
+             color-with-default (or color "gray")]
+         (set! (.-fillStyle ctx) color-with-default)
          (.fillRect ctx wall-left-pos wall-ground-pos wall-width wall-height)))))
 
  (defn draw-persepctive [canvas ctx rays]
