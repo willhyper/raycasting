@@ -54,9 +54,8 @@
        (let [wall-left-pos (* i ray-width)
              wall-width (+ 1 ray-width)
              wall-ground-pos (- horizon (/ wall-height 2))
-             color (nth colors i)
-             color-with-default (or color "gray")]
-         (set! (.-fillStyle ctx) color-with-default)
+             color (nth colors i "gray")]
+         (set! (.-fillStyle ctx) color)
          (.fillRect ctx wall-left-pos wall-ground-pos wall-width wall-height)))))
 
  (defn draw-persepctive [canvas ctx rays]
