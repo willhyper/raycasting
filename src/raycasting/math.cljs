@@ -1,6 +1,6 @@
 (ns raycasting.math)
 
-
+(def radian (/ Math/PI 180.0))
 
 (defn v- [[px py] [qx qy]]
   [(- qx px) (- qy py)])
@@ -9,9 +9,13 @@
 (defn v* [[px py] s]
   [(* s px) (* s py)])
 (defn distance [[px py] [qx qy]]
-  (let [dx (- px qx)
-        dy (- py qy)]
+  (let [dx (- qx px)
+        dy (- qy py)]
     (Math/sqrt (+ (* dx dx) (* dy dy)))))
+(defn angle [[px py] [qx qy]]
+  (let [dx (- qx px)
+        dy (- qy py)]
+    (/ (Math/atan (/ dx dy)) radian)))
 
 (defn outer-product
   ([[px py] [qx qy]] (- (* px qy) (* py qx)))
