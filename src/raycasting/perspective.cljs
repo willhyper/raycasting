@@ -47,7 +47,7 @@
                           rays)
          ray-middle-angle (math/middle ray-angles)
          ray-angles-diff (map #(- % ray-middle-angle) ray-angles)
-         ray-angles-cos (map #(Math/cos (* % math/radian)) ray-angles-diff)
+         ray-angles-cos (map #(Math/abs (Math/cos (* % math/radian))) ray-angles-diff)
          ray-projected-dists (map * ray-dists ray-angles-cos)
          wall-heights (->> ray-projected-dists
                            (map #(/ % *inf*))
