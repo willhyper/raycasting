@@ -49,7 +49,7 @@
 
      (doseq [[i wall-height] (zipmap (range) wall-heights)]
        (let [wall-left-pos (* i ray-width)
-             wall-width ray-width
+             wall-width (+ 1 ray-width)
              wall-ground-pos (- horizon (/ wall-height 2))]
          (.fillRect ctx wall-left-pos wall-ground-pos wall-width wall-height)))))
 
