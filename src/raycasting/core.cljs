@@ -11,10 +11,14 @@
 (defonce ^:dynamic *msg* (. js/document getElementById "message"))
 
 (defn _intersect-ray [[start end :as ray] wall]
-  (if (math/intersect? ray wall) [start (math/intersection ray wall)] ray))
+  (if (math/intersect? ray wall) 
+    [start (math/intersection ray wall)] 
+    ray))
 
 (defn intersect-ray [ray walls]
-  (->> walls (map #(_intersect-ray ray %)) (apply min-key #(apply math/distance %))))
+  (->> walls
+       (map #(_intersect-ray ray %))
+       (apply min-key #(apply math/distance %))))
 
 (defn cast-rays [camera walls]
   (let [cx (:x camera) cy (:y camera) deg (:degree camera)
