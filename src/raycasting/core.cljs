@@ -13,7 +13,7 @@
 (defn _intersect-ray [[start end :as ray] [wstart wend wcolor :as wall]]
   (if (math/intersect? ray wall) 
     [ [start (math/intersection ray wall)] wcolor] 
-    [ ray nil]))
+    [ ray "#000000"]))
 
 (defn intersect-ray [ray walls]
   (->> walls

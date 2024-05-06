@@ -30,9 +30,14 @@
     (apply draw-line ctx wall)))
 
 
-(defn draw-rays [ctx rays]
-  (doseq [ray rays]
-    (apply draw-line ctx ray)))
+(defn draw-rays [ctx rays-colored]  
+  (doseq [ray-colored rays-colored]
+    (let [ray (first ray-colored)
+          color (last ray-colored)
+          rsrc (first ray)
+          rdst (second ray)]
+      (draw-line ctx rsrc rdst color))))
+
 
 (defn draw-map [ctx rays]
   (draw-walls ctx)

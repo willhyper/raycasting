@@ -54,7 +54,7 @@
        (let [wall-left-pos (* i ray-width)
              wall-width (+ 1 ray-width)
              wall-ground-pos (- horizon (/ wall-height 2))
-             color (nth colors i "gray")]
+             color (nth colors i)]
          (set! (.-fillStyle ctx) color)
          (.fillRect ctx wall-left-pos wall-ground-pos wall-width wall-height)))))
 
