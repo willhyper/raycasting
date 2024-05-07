@@ -71,20 +71,20 @@
           (swap! cam/camera cam/move-forward (- step-size)))))))
 
 (defn render []
-  (move-camera! cam/camera input/key-states stage/walls)
+  
   (let
    [rays (cast-rays @cam/camera stage/walls)]
 
     (perspective/draw-persepctive *canvas* *ctx* rays)
     (map/draw-map *ctx* rays)    
 
-    (. js/window requestAnimationFrame render); this is like a loop
+    ;; (. js/window requestAnimationFrame render); this is like a loop
     ))
 
 (defn on-keydown [event]
   (let [key (.-key event)]
     (set! (. *msg* -innerHTML) key) ; update msg
-    
+    (move-camera! cam/camera input/key-states stage/walls)
     (input/on-key-press event) ; update key-state
     
     (render) ; update canvas
