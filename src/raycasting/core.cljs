@@ -23,7 +23,7 @@
 
 (defn cast-rays [camera walls]
   (let [cx (:x camera) cy (:y camera) deg (:degree camera)
-        rays-angles (->> (range -10 10 1) 
+        rays-angles (->> (range -22.5 22.5 1) 
                          (map #(+ deg %)) 
                          (map #(* math/radian %)))
         rays-vector (map (fn [rad] [(* perspective/*inf* (Math/cos rad)) 
