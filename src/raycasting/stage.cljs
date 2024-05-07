@@ -1,12 +1,31 @@
 (ns raycasting.stage)
 
-(def walls
-  [[[23.468 126.290] [106.189 87.527] "#89a02c"]
-   [[124.947 40.268] [166.507 95.415] "#916f6f"]
-   [[10 20] [30 40] "#89a02c"]
-   [[50 60] [100 120] "#89a02c"]])
+(def X 600)
+(def Y 200)
+(defn make-a-color
+  []
+  (apply str "#" (repeatedly 6 #(rand-nth (vec "0123456789abcdef")))))
 
-#_(comment
-    
-        )
+(defn make-a-wall
+  []
+  [[(rand-int X) (rand-int Y)] [(rand-int X) (rand-int Y)] (make-a-color)])
+
+(defn make-a-box
+  []
+  (let [x (rand-int X)
+        y (rand-int Y)
+        w 10
+        h 10]
+    [ [[x y] [x (+ h y)] "#ff0000"]
+     [[x y] [(+ x w) y] "#ff0000"]
+     [[x (+ h y)] [(+ w x) (+ h y)] "#ff0000"]
+     [[(+ w x) y] [(+ w x) (+ h y)] "#ff0000"]]
+    )
+  
+  )
+(def walls
+  (concat (make-a-box) (repeatedly 10 #(make-a-wall)))
+  )
+
+
 
